@@ -1,0 +1,322 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>2027aiPKM — a knowledge base that fails CI when it rots</title>
+<meta name="description" content="Markdown knowledge base for AI teams: decisions, model cards, eval runs and prompts in the repo, with a linter that fails on missing owners, broken links and stale answers. Python stdlib only.">
+<meta property="og:title" content="2027aiPKM — a knowledge base that fails CI when it rots">
+<meta property="og:description" content="Decisions, model cards and eval numbers live next to the code. The linter keeps them true.">
+<meta property="og:type" content="website">
+<link rel="stylesheet" href="fonts.css">
+<link rel="stylesheet" href="style.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%231F3DFF'/%3E%3Cpath d='M8 24V8h3l10 11V8h3v16h-3L11 13v11z' fill='%23fff'/%3E%3C/svg%3E">
+</head>
+<body>
+
+<div class="prelaunch">Pre-launch build — checkout is not connected yet. Impressum details pending.</div>
+<div class="topbar">
+  <div class="topbar-in">
+    <span class="logo">2027<span class="logo-ai">ai</span>PKM</span>
+    <span class="topbar-meta">v0.1 · markdown + one python file · €49</span>
+    <a class="buy-mini" href="#price">Buy</a>
+  </div>
+</div>
+
+<div class="shell">
+  <aside class="rail" aria-label="Contents">
+    <p class="rail-title">Contents</p>
+    <nav>
+      <a href="#overview"><span>01</span> Overview</a>
+      <a href="#problem"><span>02</span> Why it rots</a>
+      <a href="#structure"><span>03</span> Structure</a>
+      <a href="#cli"><span>04</span> Commands</a>
+      <a href="#lint"><span>05</span> Lint rules</a>
+      <a href="#fit"><span>06</span> Fit</a>
+      <a href="#price"><span>07</span> Price</a>
+      <a href="#faq"><span>08</span> FAQ</a>
+    </nav>
+    <div class="rail-foot">
+      <p>Status: v0.1<br>New. No users to quote yet.</p>
+    </div>
+  </aside>
+
+  <main>
+    <!-- 01 -->
+    <section id="overview" class="block first">
+      <p class="num">01 / Overview</p>
+      <h1>The knowledge base your AI team won't abandon.</h1>
+      <p class="lede">
+        Decisions, model cards, eval runs and production prompts live in <code>kb/</code> inside your
+        repo. One Python file searches and lints them. Nothing to host, nothing to sign up for, and
+        CI fails when a decision goes stale or an eval loses its numbers.
+      </p>
+
+      <table class="spec">
+        <tbody>
+          <tr><th>Ships as</th><td>One zip: 10 folder sections, 8 note templates, 8 example records, one CLI</td></tr>
+          <tr><th>Runtime</th><td>Python 3.8+ · standard library only · no <code>pip install</code></td></tr>
+          <tr><th>Storage</th><td>Plain markdown in git. Any remote, any editor, any diff review</td></tr>
+          <tr><th>Index</th><td><code>.pkm/index.json</code>, rebuilt in ~0.3 s for 500 notes, safe to gitignore</td></tr>
+          <tr><th>Tested on</th><td>macOS, Python 3.9.6 · 13 unit tests · Windows untested in v0.1</td></tr>
+          <tr><th>Price</th><td><strong>€49</strong> solo · <strong>€199</strong> team of 10 · one-time</td></tr>
+        </tbody>
+      </table>
+
+      <div class="actions">
+        <a class="btn-primary" href="#price">Buy — €49</a>
+        <a class="btn-ghost" href="#lint">Read the lint rules</a>
+      </div>
+      <p class="note">No account, no telemetry, no model required. The linter is the product; search is the convenience.</p>
+    </section>
+
+    <!-- 02 -->
+    <section id="problem" class="block">
+      <p class="num">02 / Why it rots</p>
+      <h2>Four failures that cost engineering weeks</h2>
+      <table class="rules">
+        <thead><tr><th>Symptom</th><th>What it actually costs</th></tr></thead>
+        <tbody>
+          <tr><td>Eval tables live in a Slack thread</td><td>The next model decision is made on memory. Nobody can reproduce last quarter's number.</td></tr>
+          <tr><td>Prompts in <code>prompts.py</code> as <code>v2_final_FINAL</code></td><td>You cannot say which prompt produced the current quality. Rollback is guesswork.</td></tr>
+          <tr><td>ADRs written once, never revisited</td><td>A 2023 decision quietly contradicts the 2026 architecture. New joiners implement the wrong one.</td></tr>
+          <tr><td>Onboarding by archaeology</td><td>Three weeks of asking people. Each answer lives in one head, unsearchable.</td></tr>
+        </tbody>
+      </table>
+      <p class="note">
+        Wikis fail for a structural reason: a wiki page has no owner, no diff, no review and no date.
+        A folder in the repo has all four, and can fail a pull request.
+      </p>
+    </section>
+
+    <!-- 03 -->
+    <section id="structure" class="block">
+      <p class="num">03 / Structure</p>
+      <h2>Ten sections, eight record types</h2>
+      <div class="split">
+        <pre class="tree"><code>kb/
+├── 00-inbox/        unfiled captures
+├── 10-decisions/    ADR-0001-...
+├── 20-models/       MODEL-0001-...
+├── 30-evals/        EVAL-0001-...
+├── 40-prompts/      PROMPT-0001-...
+├── 50-incidents/    INC-0001-...
+├── 60-research/     PAPER-0001-...
+├── 70-specs/        SPEC-0001-...
+├── 80-meetings/     MTG-0001-...
+├── 90-archive/      retired, never deleted
+└── _templates/      8 templates</code></pre>
+        <div>
+          <p>Each type has its own frontmatter contract. <code>pkm new &lt;type&gt;</code> numbers the note,
+          fills the template and puts it in the right folder — so the schema never depends on remembering it.</p>
+          <table class="fields">
+            <thead><tr><th>Type</th><th>Required beyond core</th></tr></thead>
+            <tbody>
+              <tr><td><code>adr</code></td><td>decision, alternatives</td></tr>
+              <tr><td><code>model</code></td><td>family, licence</td></tr>
+              <tr><td><code>eval</code></td><td>suite, model, metrics + a number in the body</td></tr>
+              <tr><td><code>prompt</code></td><td>version, task</td></tr>
+              <tr><td><code>incident</code></td><td>severity, root_cause</td></tr>
+              <tr><td><code>research</code></td><td>source, takeaway</td></tr>
+              <tr><td><code>spec</code></td><td>goals</td></tr>
+              <tr><td><code>meeting</code></td><td>attendees</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- 04 -->
+    <section id="cli" class="block">
+      <p class="num">04 / Commands</p>
+      <h2>Six commands. That is the whole interface.</h2>
+      <table class="rules mono-cells">
+        <tbody>
+          <tr><td><code>pkm.py init DIR</code></td><td>scaffold the sections and templates</td></tr>
+          <tr><td><code>pkm.py new TYPE "Title"</code></td><td>next numbered note from the template</td></tr>
+          <tr><td><code>pkm.py index</code></td><td>build the search index</td></tr>
+          <tr><td><code>pkm.py find "query" --json</code></td><td>BM25 ranking; JSON for agents and CI</td></tr>
+          <tr><td><code>pkm.py lint --max-age-days 120</code></td><td>fields, links, staleness; exits 1 on errors</td></tr>
+          <tr><td><code>pkm.py status</code></td><td>counts by type, owners, stale docs</td></tr>
+        </tbody>
+      </table>
+
+      <p class="caption">Real output — the bundled example KB with two planted errors:</p>
+      <pre class="out"><code>$ python3 tools/pkm.py lint
+<span class="e">err</span>   10-decisions/ADR-0002-bm25-before-embeddings.md  missing field: owner
+<span class="e">err</span>   10-decisions/ADR-0002-bm25-before-embeddings.md  broken link: [[SPEC-0009-search-v3]]
+
+8 notes, 2 errors, 0 warnings
+<span class="dim">exit=1</span>
+
+$ python3 tools/pkm.py find "silent fallback summariser" --top 2
+50-incidents/INC-0001-silent-fallback.md     16.3  Summariser silently fell back to the 3B model
+20-models/MODEL-0001-qwen7b-instruct.md       9.3  Qwen 7B Instruct as the default summariser</code></pre>
+
+      <p class="note">
+        That exit code is the point: <code>python3 tools/pkm.py lint</code> in CI blocks the pull request
+        that would have merged a decision with no owner.
+      </p>
+    </section>
+
+    <!-- 05 -->
+    <section id="lint" class="block">
+      <p class="num">05 / Lint rules</p>
+      <h2>What fails, and at what level</h2>
+      <table class="rules">
+        <thead><tr><th>Check</th><th>Level</th></tr></thead>
+        <tbody>
+          <tr><td>Missing core field — type, title, status, owner, created, tags</td><td><span class="pill err-pill">error</span></td></tr>
+          <tr><td>Missing type-specific field on an active note — ADR <code>decision</code>, eval <code>metrics</code>, prompt <code>version</code>, …</td><td><span class="pill err-pill">error</span></td></tr>
+          <tr><td>Same field on a <code>draft</code>/<code>proposed</code> note — allowed to be incomplete while you write it</td><td><span class="pill warn-pill">warning</span></td></tr>
+          <tr><td>Broken <code>[[wikilink]]</code></td><td><span class="pill err-pill">error</span></td></tr>
+          <tr><td>Eval note with no numeric metric in the body</td><td><span class="pill err-pill">error</span></td></tr>
+          <tr><td>Active note whose <code>updated</code> is older than the configured window</td><td><span class="pill warn-pill">warning</span></td></tr>
+          <tr><td>ADR body without a <code>## Decision</code> heading</td><td><span class="pill warn-pill">warning</span></td></tr>
+          <tr><td>Unknown <code>type</code> value</td><td><span class="pill warn-pill">warning</span></td></tr>
+        </tbody>
+      </table>
+      <p class="note">
+        <code>README.md</code> and <code>90-archive/</code> are documentation, not records, and are skipped.
+        Rules are ~90 lines of Python you can read and edit in one sitting.
+      </p>
+    </section>
+
+    <!-- 06 -->
+    <section id="fit" class="block">
+      <p class="num">06 / Fit</p>
+      <h2>Buy this if / don't buy this if</h2>
+      <div class="split two">
+        <div>
+          <h3 class="ok">Buy this if</h3>
+          <ul class="yes">
+            <li>You have 5–30 engineers and 1–4 models in production.</li>
+            <li>You already do code review, and you would review a decision the same way.</li>
+            <li>You want the knowledge to leave with the repo, not with a SaaS contract.</li>
+            <li>You have been burned by a model card that was two versions out of date.</li>
+            <li>You are fine with markdown and a terminal — that is the whole UX.</li>
+          </ul>
+        </div>
+        <div>
+          <h3 class="no">Don't buy this if</h3>
+          <ul class="nope">
+            <li>You want a web app with a graph view. This has no UI.</li>
+            <li>You want semantic search. This is BM25; paraphrase queries rank worse and I say so.</li>
+            <li>You are a solo note-taking hobbyist. A vault product will look nicer.</li>
+            <li>You need SSO, permissions or per-page sharing. Git is the permission model.</li>
+            <li>You need it on Windows today. It should run; I have not verified it.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- 07 -->
+    <section id="price" class="block">
+      <p class="num">07 / Price</p>
+      <h2>One-time. Files you can fork.</h2>
+      <table class="price-table">
+        <thead><tr><th>Licence</th><th>Price</th><th>Includes</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><strong>Solo</strong></td>
+            <td class="price-cell">€49</td>
+            <td>The zip: CLI, 10 sections, 8 templates, 8 worked examples, updates for 12 months</td>
+          </tr>
+          <tr>
+            <td><strong>Team</strong></td>
+            <td class="price-cell">€199</td>
+            <td>Same, 10 seats, invoice, one 45-minute setup call, lint wired into your CI</td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="actions">
+        <a class="btn-primary" href="#price" data-checkout="solo">Buy Solo — €49</a>
+        <a class="btn-ghost" href="#price" data-checkout="team">Buy Team — €199</a>
+      </div>
+      <div class="fine">
+        <p><strong>Not included:</strong> a video course, a web app, embeddings, Windows support commitment.
+        There are no testimonials on this page because there are no customers yet — the product is one week old.</p>
+        <p><strong>Refunds.</strong> Digital content with immediate access: the statutory withdrawal right is
+        waived with your explicit consent at checkout (§356 Abs. 5 BGB). If it does not run on your machine,
+        write to the support address and it gets fixed or refunded.</p>
+        <p><strong>VAT</strong> is handled by the checkout provider. Licences are per engineer as stated.</p>
+      </div>
+    </section>
+
+    <!-- 08 -->
+    <section id="faq" class="block">
+      <p class="num">08 / FAQ</p>
+      <h2>Questions worth asking</h2>
+      <details><summary>Why not just a wiki page per decision?</summary>
+        <p>A wiki page has no owner field, no diff review, no date and no failing state. This has all four
+        because it is a file in the repo. That is the entire argument, and it is measurable: run lint on
+        a wiki export and count how many pages have an owner.</p>
+      </details>
+      <details><summary>Do I need a model or a GPU?</summary>
+        <p>No. There is no model in this product. Search is BM25 over markdown, the linter is regex and
+        frontmatter. Nothing is summarised automatically, which is why nothing is hallucinated into your
+        knowledge base.</p>
+      </details>
+      <details><summary>How does it compare to an Obsidian or Notion vault product?</summary>
+        <p>Those are personal note systems that happen to hold documents. This is a team record system that
+        happens to use markdown. Different buyer, different failure mode: they optimise for capture, this
+        optimises for review and decay.</p>
+      </details>
+      <details><summary>Can it work with my existing docs?</summary>
+        <p>Yes — markdown files with the required frontmatter. Run <code>pkm.py init</code>, move files into
+        the sections, add owner/created/updated, then let lint tell you what is still incomplete. Expect
+        half a day for a 100-file repo.</p>
+      </details>
+      <details><summary>What happens when I stop paying?</summary>
+        <p>Nothing stops working. There is no licence server. The CLI is MIT-licensed; the templates are
+        covered by the purchase. You simply stop receiving updates after 12 months.</p>
+      </details>
+      <details><summary>Is the search any good?</summary>
+        <p>On the bundled example it ranks the right note first for keyword-shaped questions and second for
+        paraphrase ("why did we drop embeddings" returns the eval first, the decision second). It is
+        lexical, it is fast and it needs no index server. It will not beat a vector store on fuzzy recall,
+        and no page should tell you otherwise.</p>
+      </details>
+    </section>
+
+    <section class="block end">
+      <h2>Ship the record, not the meeting notes.</h2>
+      <p class="lede">€49. One zip, one Python file, ten folders. The linter is the part you will keep.</p>
+      <div class="actions"><a class="btn-primary" href="#price">Buy — €49</a></div>
+    </section>
+
+    <footer>
+      <div class="foot-cols">
+        <div>
+          <p class="foot-title">2027aiPKM</p>
+          <p class="note">A knowledge base for AI teams. Built and supported by one engineer.</p>
+        </div>
+        <div>
+          <p class="foot-title">Product</p>
+          <a href="#cli">Commands</a>
+          <a href="#lint">Lint rules</a>
+          <a href="#price">Price</a>
+        </div>
+        <div>
+          <p class="foot-title">Legal</p>
+          <!-- TODO before launch: real Impressum, Datenschutz and Widerruf pages are required in Germany. -->
+          <a href="/impressum.html">Impressum</a>
+          <a href="/datenschutz.html">Datenschutz</a>
+          <a href="/widerruf.html">Widerruf</a>
+        </div>
+        <div>
+          <p class="foot-title">Contact</p>
+          <!-- TODO before launch: replace with the real support mailbox. No personal address. -->
+          <a href="mailto:support@example.com">support@example.com</a>
+          <a href="https://github.com/pirahansiah">GitHub</a>
+        </div>
+      </div>
+      <p class="note small">© 2026 Farshid PirahanSiah. Not affiliated with any note-taking product. Markdown is a format, not a vendor.</p>
+    </footer>
+  </main>
+</div>
+
+<script src="app.js" defer></script>
+</body>
+</html>
